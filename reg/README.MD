@@ -2040,6 +2040,15 @@ Windows设置-个性化-任务栏-人脉-在任务栏上显示联系人
 
 [HKEY_CURRENT_USER\Software\Classes\.ico]
 @="PhotoViewer.FileAssoc.Tiff"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations]
+".jpg"="PhotoViewer.FileAssoc.Tiff"
+".jpeg"="PhotoViewer.FileAssoc.Tiff"
+".gif"="PhotoViewer.FileAssoc.Tiff"
+".png"="PhotoViewer.FileAssoc.Tiff"
+".bmp"="PhotoViewer.FileAssoc.Tiff"
+".ico"="PhotoViewer.FileAssoc.Tiff"
+".tiff"="PhotoViewer.FileAssoc.Tiff"
 ```
 
 
@@ -4042,6 +4051,13 @@ Windows设置-个性化-任务栏-人脉-在任务栏上显示联系人
 [-HKEY_CLASSES_ROOT\Directory\background\shellex\ContextMenuHandlers\NvCplDesktopContext]
 ```
 
+* 去掉桌面右键菜单Intel核显菜单"英特尔显卡设置"
+
+```
+[-HKEY_CLASSES_ROOT\Directory\Background\shellex\ContextMenuHandlers\igfxcui]
+[-HKEY_CLASSES_ROOT\Directory\Background\shellex\ContextMenuHandlers\igfxDTCM]
+```
+
 ### 12.2 添加右键菜单项目
 
 * 添加"管理员获得所有权(Grant Admin Full Control)"
@@ -4064,6 +4080,30 @@ Windows设置-个性化-任务栏-人脉-在任务栏上显示联系人
 [HKEY_CLASSES_ROOT\Directory\shell\grantadmin\command]
 @="cmd.exe /c takeown /f \"%1\" /r /d y && icacls \"%1\" /grant administrators:F /t"
 "IsolatedCommand"="cmd.exe /c takeown /f \"%1\" /r /d y && icacls \"%1\" /grant administrators:F /t"
+```
+
+* 添加"恢复原始权限"
+
+**注意:** 这是"管理员获得所有权限"的逆操作，还原文件权限。
+
+```
+;[HKEY_CLASSES_ROOT\*\shell\ReAuth]
+;@="恢复文件权限"
+;"NoWorkingDirectory"=""
+;"icon"="%SystemRoot%\\system32\\imageres.dll,101"
+
+;[HKEY_CLASSES_ROOT\*\shell\ReAuth\command]
+;@="cmd.exe /c takeown /f \"%1\" && icacls \"%1\" /reset && cacls \"%1\" /e /r \"%%USERNAME%%\""
+;"IsolatedCommand"="cmd.exe /c takeown /f \"%1\" && icacls \"%1\" /reset && cacls \"%1\" /e /r \"%%USERNAME%%\""
+
+;[HKEY_CLASSES_ROOT\Directory\shell\ReAuth]
+;@="恢复文件权限"
+;"NoWorkingDirectory"=""
+;"icon"="%SystemRoot%\\system32\\imageres.dll,101"
+
+;[HKEY_CLASSES_ROOT\Directory\shell\ReAuth\command]
+;@="cmd.exe /c takeown /f \"%1\" /r /d y && icacls \"%1\" /reset && cacls \"%1\" /e /r \"%%USERNAME%%\""
+;"IsolatedCommand"="cmd.exe /c takeown /f \"%1\" /r /d y && icacls \"%1\" /reset && cacls \"%1\" /e /r \"%%USERNAME%%\""
 ```
 
 * 右键点击任意文件显示的菜单中加入"使用记事本打开(Open With Notepad)"
@@ -4145,15 +4185,37 @@ Windows设置-个性化-任务栏-人脉-在任务栏上显示联系人
 * 在文件夹右键菜单添加"在此处打开CMD"
 
 ```
-[HKEY_CLASSES_ROOT\Folder\shell\OpenCMD]
+;[HKEY_CLASSES_ROOT\Folder\shell\OpenCMD]
+;@="在此处打开CMD"
+;"icon"="%windir%\\system32\\cmd.exe,0"
+
+;[HKEY_CLASSES_ROOT\Folder\shell\OpenCMD\Command]
+;@="CMD.EXE /K CD %1"
+```
+
+* 在文件夹背景右键菜单添加"在此处打开CMD"
+
+```
+[HKEY_CLASSES_ROOT\Directory\Background\shell\OpenCMD]
 @="在此处打开CMD"
 "icon"="%windir%\\system32\\cmd.exe,0"
 
-[HKEY_CLASSES_ROOT\Folder\shell\OpenCMD\Command]
-@="CMD.EXE /K CD %1"
+[HKEY_CLASSES_ROOT\Directory\Background\shell\OpenCMD\command]
+@="cmd.exe /s /k pushd \"%V\""
 ```
 
-* 在桌面菜单中添加"锁定屏幕"
+* 在文件夹背景右键菜单添加"锁定屏幕"
+
+```
+[HKEY_CLASSES_ROOT\Directory\Background\shell\lockpc]
+@="锁定屏幕"
+"icon"="shell32.dll,47"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\lockpc\command]
+@="Rundll32 User32.dll,LockWorkStation"
+```
+
+* 在桌面右键菜单中添加"锁定屏幕"
 
 ```
 [HKEY_CLASSES_ROOT\DesktopBackground\Shell\lockpc]
@@ -4331,3 +4393,7 @@ Windows设置-个性化-任务栏-人脉-在任务栏上显示联系人
 - [ ] 右键菜单项设置
     - [ ] 在右键菜单添加以管理员方式打开cmd
     - [x] 在右键菜单添加锁定菜单
+    - [x] 在右键菜单添加"恢复文件权限"
+    - [x] 在文件夹背景右键菜单添加"在此处打开CMD"
+    - [x] 去掉桌面右键菜单Intel核显菜单"英特尔显卡设置"
+    - [x] 在桌面右键菜单中添加"锁定屏幕"
